@@ -7,7 +7,7 @@ try:
 except socket.error:
     print("Socket creation failed at client side")
 
-port = 1234
+port = 1989
 sock.connect(('localhost', port))
 
 print("Welcome to this chat room")
@@ -16,7 +16,7 @@ print("Type quit and press enter to exit the connection")
 
 while (True):
     snd_msg = input()
-    sock.send( snd_msg.encode())
+    sock.send( snd_msg.encode() )
     recv_msg = sock.recv(1024)
 
     print("Server: " + recv_msg.decode())
