@@ -71,15 +71,19 @@ def dText(arr,d,n):
         ret.append(dv)
     return ret
 
+text = str(input('Enter your message: '))
 #Generate Public Key
-theNum1 = generateRandomPrimeDigit(0,100)
-theNum2 = generateRandomPrimeDigit(0,100)
+theNum1 = generateRandomPrimeDigit(0,500)
+theNum2 = generateRandomPrimeDigit(0,500)
 n = theNum1 * theNum2
 t = (theNum1-1) * (theNum2-1) #phi(n)
 e = generateExpNumber(t)
 
 #Generating Private Key
 d = generatePK(t,e)
+#When private key is less than 600, there tends to be a decipher error.
+while(d < 600):
+    d = generatePK(t,e)
 
 #ciphered text
 ecypTxt = cipherVal(1234,e,n)
@@ -90,7 +94,7 @@ decypTxt = decryptVal(ecypTxt,d,n)
 #print('p = '+str(theNum1)+' q = '+str(theNum2)+' n = '+str(n)+' t = '+str(t)+' e = '+str(e)+' d = '+str(d))
 #print('ciphered text from 1234 is '+str(ecypTxt)+' and it shall pass be deciphered to '+str(decypTxt))
 
-text = "Hello"
+#text = "Hello"
 etxt = textEncode(text)
 dlv = cText(etxt,e,n)
 #transmitting >>>>>

@@ -26,6 +26,7 @@ print("Server socket is listening")
 #下面这两段code是对应多个client的socket
 sockets_list = [sock]
 
+
 clients = {} # A list of client info that is stored in dictionary
 
 #收到packet时，先读header，知道msg大小后，继续往后读
@@ -104,7 +105,6 @@ while (True):
             clients[conn] = user
 
             print("New incoming connection at "+str(conn)+" : "+str(*address) + " from "+user['data'].decode('utf-8'))
-
 #以上就是所有改动，直接借鉴吧，因为即使完全借鉴的话，我们最后还是要加入好多的东西（比如加密和UI），并且直接借鉴速度还快一点。
 
 
