@@ -34,19 +34,21 @@ def recv_pkt(client_sock):
     try:
 
         pkt_hdr = client_sock.recv(HDR_LENGTH)
-
-        if pkt_hdr is False:
-            print("This client has close the connection.")
+        
+        if not len(pkt_hdr):
+            print("pkt_hdr is false")
             return False
 
-        payload = client_sock.recv(pkt_hdr)
+        payload_length = int(pkt_hdr.decode().strip())
+        payload = client_sock.recv(payload_length)
         
         ret = {'HDR' : pkt_hdr, 'data' : payload}
 
         return ret
     
     except:
-        print("This client has close the connection.")
+        
+        print("recv_pkt exception")
         return False
 
 while (True):
@@ -69,16 +71,16 @@ while (True):
     #     snd_msg = input()
     #     conn.send(snd_msg.encode())
 
-    #下面都是我改（chao）的
-    read_sock = select.select(sockets_list, [], sockets_list)
+    #下面都是我改的
+    read_sock,write_sock, _ = select.select(sockets_list, [], sockets_list)
 
     for new_info_sock in read_sock:
         if new_info_sock != sock:
             #curently recieving packets/msg from one of the client 
             msg = recv_pkt(new_info_sock)
-
+           
             if msg is False:
-                print("Client"+ clients[new_info_sock]['data'].decode('utf-8') +"has close the connection.")
+                print("Client"+ clients[new_info_sock]['data'].decode() +"has close the connection.")
                 sockets_list.remove(new_info_sock)
                 del clients[new_info_sock]
 
@@ -92,6 +94,7 @@ while (True):
                     client_sock.send(user['HDR']+user['data']+msg['HDR']+msg['data'])
             
         else:
+            print("Connection Established")
             #currently recieving packets from server (new connection)
             conn, address = sock.accept()
             
@@ -101,10 +104,10 @@ while (True):
                 continue
 
             sockets_list.append(conn)
-
+  
             clients[conn] = user
 
-            print("New incoming connection at "+str(conn)+" : "+str(*address) + " from "+user['data'].decode('utf-8'))
+            print("New incoming connection at "+str(conn)+" : "+str(address) + " from "+user['data'].decode('utf-8'))
 #以上就是所有改动，直接借鉴吧，因为即使完全借鉴的话，我们最后还是要加入好多的东西（比如加密和UI），并且直接借鉴速度还快一点。
 
 
