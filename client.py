@@ -19,7 +19,7 @@ sock.connect((host, port))
 
 cid = clientName.encode()
 cid_length = len(cid)
-client_hdr = (str(cid_length) + ":<" + str(HDR_LENGTH)).encode()
+client_hdr = "{cid_len:<{hdr_len}}".format(cid_len=cid_length, hdr_len = HDR_LENGTH).encode()
 sock.send(client_hdr + cid)
 
 
@@ -38,7 +38,8 @@ while (True):
     if (msg == True):
         msg = msg.encode()
         msg_len = len(msg)
-        msg_hdr = (str(msg_len) + ":<" + str(HDR_LENGTH)).encode()
+        msg_hdr = "{ml:<{hl}}".format(ml = msg_len, hl = HDR_LENGTH).encode()
+        #msg_hdr = (str(msg_len) + ":<" + str(HDR_LENGTH)).encode()
         sock.send(msg_hdr + msg)
 
     while True:
