@@ -22,7 +22,6 @@ cid_length = len(cid)
 client_hdr = (str(cid_length) + ":<" + str(HDR_LENGTH)).encode()
 sock.send(client_hdr + cid)
 
-sock.connect(('localhost', port))
 
 print("Welcome to this chat room")
 print("Type words and press enter to send message")
