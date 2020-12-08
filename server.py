@@ -1,6 +1,5 @@
 import socket
-import sys
-import copy
+import crypt
 import select
 
 HDR_LENGTH = 8
@@ -10,7 +9,7 @@ port = 1989
 # Creating Socket at Server Side
 try:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #加了下面这一行可以重复使用地址
+    #To repeaetingly use the same address
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     print("Socket creation success at server")
@@ -24,22 +23,46 @@ print("Server socket binded to localhost and port #%s" %(port))
 sock.listen()
 print("Server socket is listening")
 
-#下面这两段code是对应多个client的socket
+#For multi clients and sockets
 sockets_list = [sock]
 
 index = 1
 
 clients = {} # A list of client info that is stored in dictionary
 
-recievers = {}
+recievers = {} # A list of reciver candidate and their contact
 
-recievers_conn = {}
+recievers_conn = {} # A list of contact's socket index to the socket_list above
 
 # A list of client public key info is stored
 client_public_key_nums = {} 
 client_public_key_exps = {}
 
-#收到packet时，先读header，知道msg大小后，继续往后读
+# Sending server message to the client
+def serverMessage(orig_msg):
+
+    #prepare socket
+    sender = clients[new_info_sock]
+    sender_name = clients[new_info_sock]['data'].decode()
+    reciever_name = recievers[sender_name]
+    contact_sock_index = recievers_conn[reciever_name]
+    contact_sock = sockets_list[contact_sock_index]
+
+    #prepare public key for encryption
+    PubKexp = int(client_public_key_exps[reciever_name].decode())
+    PubKnum = int(client_public_key_nums[reciever_name].decode())
+    print("pkexp = "+str(PubKexp)+" / pknum = "+str(PubKnum))
+    print("The meesage is : "+str(orig_msg))
+    #sending the meesage
+    msg = crypt.listToStr(crypt.cText(orig_msg, PubKexp, PubKnum))
+    #print("[CLIENT] Ciphered Message sent = "+msg)
+    msg = msg.encode()
+    msg_len = len(msg)
+    msg_hdr = "{ml:<{hl}}".format(ml = msg_len, hl = HDR_LENGTH).encode()
+    #msg_hdr = (str(msg_len) + ":<" + str(HDR_LENGTH)).encode()
+    contact_sock.send(sender['HDR']+sender['data']+msg_hdr + msg)
+
+#When recieved packets, read the header first, know the bytes number and then read the data
 def recv_pkt(client_sock):
     try:
         print("[RECIEVE] RECIEVING from "+str(client_sock))
@@ -82,7 +105,6 @@ while (True):
     #     snd_msg = input()
     #     conn.send(snd_msg.encode())
 
-    #下面都是我改的
     read_sock,write_sock, _ = select.select(sockets_list, [], sockets_list)
 
     for new_info_sock in read_sock:
@@ -93,6 +115,9 @@ while (True):
             msg = recv_pkt(new_info_sock)
 
             if msg is False:
+                #TODO send server message to reciever telling the connection is off
+                disconnect_txt = "[SERVER MESSAGE] Our Client <"+ str(clients[new_info_sock]['data'].decode()) +"> has close the connection."
+                serverMessage(disconnect_txt)
                 print("Client <"+ clients[new_info_sock]['data'].decode() +"> has close the connection.")
                 sockets_list.remove(new_info_sock)
                 del clients[new_info_sock]
@@ -135,7 +160,7 @@ while (True):
 
             sockets_list.append(conn)
             clients[conn] = sender
-            #TODO decode or not ? 
+
             sender_name = sender['data'].decode()
 
             recievers_conn[sender_name] = index
@@ -186,15 +211,3 @@ while (True):
             print("Public Key Set: ")
             print("  EXP = "+str(public_key_exp))
             print("  NUM = "+str(public_key_num))
-#以上就是所有改动，直接借鉴吧，因为即使完全借鉴的话，我们最后还是要加入好多的东西（比如加密和UI），并且直接借鉴速度还快一点。
-
-
-
-
-
-
-
-
-
-
-

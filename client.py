@@ -105,13 +105,14 @@ print("Recieved public keys are:\n exp = "+str(PubKexp)+" num = "+str(PubKnum))
 def receive_display():
     # Display the received message on Chat screen
     while True:
-        # Getting the header length and client name (From who)
         try:
+            # Getting the header length and client name (From who)
             recv_header = sock.recv(HDR_LENGTH)
             if not len(recv_header):
                 sys.exit()
             recv_length = int(recv_header.decode().strip())
             recvName = sock.recv(recv_length).decode()
+            
             # Getting the message (Says what)
             #TODO add decryption
             msg_header = sock.recv(HDR_LENGTH)

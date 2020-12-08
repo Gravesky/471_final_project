@@ -1,0 +1,79 @@
+CMPT 471 Networking II - Group Project 
+End-to-end encryption chat application 
+Huaicheng Deng 301313726 hda25@sfu.ca 
+Handi Yang 301341169 hya71@sfu.ca 
+Instructor: Khaled Diab
+
+GIT HUB LINK :https://github.com/Gravesky/471_final_project
+
+Application Environment:
+- In our project, we recommand user TO run it under the Windows 10 system.
+- In order to run this project under windows system, Python must be installed on the system.
+    - We recommand Python 3.8, as this is the system we are currently using for our project.
+- This project also involved using Tkinter to display its text interface.
+    - To check if you have a Tkinter installed on your machine, follow the folowing steps.
+        1. Open PowerShell (You can search it under Windows Bar)
+        2. Type in the command "python" to invoke the Python terminal interface.
+        3. Run the following command in sequence
+            a.  "import tkinter as tk"
+            b.  "the_version = tk.TkVersion"
+            c.  "print(the_version)"
+        4. If a  number was correctly print it out, it means you have tkinter already installed. Otherwise, install Tkinter using the following command inside the Python terminal.
+            a.  "pip3 install tk"
+
+Known Issues & Attention!
+- In order for this project to run correctly, we ask the user to follow these rules below:
+    - The username and recipient name are acting as a unqiue ID in this message system.
+        1. When user are asked  to enter username, please enter an unqiue username, which means it must not be the same as your reciever and other user (sendersender)
+        2. When the user are asked to enter the reciever name (i.e.the name of the person you wished to contact), it must be unique like its user name and please confirm this name with the recipient(reciever). 
+            - The name for the reciever entered by Client A must be same as the username entered by Client B. And the username entered for Client A must also be exactly the same as the reciever name Client B.
+    - Due to the limited amount of time, we did not implement the feature to check the repeated username, which entering a name already in use at a different chat session may cause error. So please be careful when entering the username and reciever name for your chat session.
+    - Again, due to the limited amount of time avalible, this applcation is currently only avalible on localhost with a fixed port.
+
+Instructions:
+1.  Open three PowerShell terminal. And direct it to the project folder.
+2.  In the first terminal, run the server with the follwing command:
+    - "python server.py"
+3.  In the second terminal, run the first Client (Client A) with the following command:
+    - "python client.py"
+4.  Once the client side terminal start running, you will see a message prompting out saying "Please enter your name for this chat session: ". 
+    At here, you shall be able to type in your unique user name like "John", and then once finished press enter.
+5.  Then the client side terminal will prompt out another message like "Please enter the name of the person you wish to contact: ".
+    At here, you shall type in the unique id/name of the reciever. Then press enter once finished the name.
+6.  You have just set up one of the client for chat, now let's set up the other one by going to the third terminal.
+7.  In the third terminal, run the second client (Client B) with the same command at step 3 and then repeat step from  4 to 5.
+8.  Now since both client side has finished entering their info, it time to excahnge the public keys. And upon successful key exchange, the chat box will be prompt out.
+9.  The chat box consist a very simple stright forward design. In the bottom, there are three sections. 
+    From left to right, there are button to manually refresh the chat interface for new message, the box to type any chat message to the reciever and the button for sending the message.
+10. If one of the client disconnected unexpectedly, the other client will recieve a message from serve indicating that his reciever has disconnected.
+11. We can repeat steps from 3 - 9 to open as many client pairs as we want. Currently, we have tested for 4 clients running at the same time. (2 pairs)
+
+Test Cases:
+
+    Test case 1:
+    ENV: 3 Terminals-> a server, Clients A and CLient B
+    Connection: Client A connect to Client B via server
+    Input: type "Hello" in the chat bar of Client A, and click Send button
+    Expected output: 
+                    1. the chat dialogue displays the "Hello" with a client name before it at Client A.
+                    2. the chat dialogue on another client side (Client B) displays the "Hello" message.
+                    3. the terminal at the server side displays what the message "Hello" has been encrypted to.
+
+    Test case 2:
+    ENV: 3 Terminals-> a server, Clients A and CLient B
+    Connection: Client A connect to Client B via server
+    Input: close the chat dialogue on client side (Client A)
+    Expected output: 
+                    1. The server terminal displays the client that has closed the connection.
+                    2. The other client (Client B) dusplayed with a server message indicating the disconnection.
+    
+    Test case 3:
+    ENV: 5 Terminals-> a server, Clients A, CLient B, Client C and Client D
+    Connection: Client A connect to Client B via server;  Client C connect to Client D via server
+    Input: type "Hello" in the chat bar of Client A, and click Send button; type "Hi" in the chat bar of Client C, and click Send button
+    Expected output: 
+                    1. the chat dialogue displays the "Hello" with a client name before it at Client A; the chat dialogue displays the "Hi" with a client name before it at Client C.
+                    2. the chat dialogue on another client side (Client B) displays the "Hello" message; the chat dialogue on another client side (Client D) displays the "Hi" message.
+                    3. the terminal at the server side displays what the message "Hello" and message "Hi" has been encrypted to.
+
+
