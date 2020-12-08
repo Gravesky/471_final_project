@@ -1,7 +1,5 @@
-import decimal
 from decimal import Decimal
 import random
-import sympy
 from sympy import *
 from sympy.plotting.plot import TextBackend
 
