@@ -1,21 +1,21 @@
 import socket
 import sys
-import select
-import signal
+import threading
 import time
 import crypt
 import tkinter as tk
 import tkinter.font as ft
 
+WAIT_TIME = 2.0
 HDR_LENGTH = 8
 host = 'localhost'
 port = 1989
 
-def keyDump():
-    PubKexp
-    PubKnum
-    PrvKexp
-    PubKnum
+# def keyDump():
+#     PubKexp
+#     PubKnum
+#     PrvKexp
+#     PubKnum
 
 #TODO Key sections
 
@@ -92,6 +92,7 @@ while(PubKexp == -1 or PubKnum == -1):
             PubKnum_size = int(PubKnum_hdr.decode().strip())
             PubKnum = int(sock.recv(PubKnum_size).decode())
             print("[CLIENT] Public Num key is assigned...")
+
     except BlockingIOError as e:
         #print("ERROR : "+str(e))
         time.sleep(5)
@@ -125,6 +126,8 @@ def receive_display():
         # The non-blocking recv() cause IO exception when the client has not typed in any message
         # If it is the case that recv() is waiting, break    
         except BlockingIOError:
+            timer = threading.Timer(WAIT_TIME, receive_display)
+            timer.start()
             break
 
 
@@ -143,6 +146,9 @@ def send_display(event = None):
         msg_hdr = "{ml:<{hl}}".format(ml = msg_len, hl = HDR_LENGTH).encode()
         #msg_hdr = (str(msg_len) + ":<" + str(HDR_LENGTH)).encode()
         sock.send(msg_hdr + msg)
+        #AUTO-RECIEVE
+        timer = threading.Timer(WAIT_TIME, receive_display)
+        timer.start()
     
     tk_msg.set("")
 
@@ -178,9 +184,10 @@ refreshButton = tk.Button(chat, text = "Refresh", command = receive_display, bg 
 refreshButton['font'] = ft.Font(size = 12)
 refreshButton.pack(side = 'left')
 
-msg_box.insert(tk.END, "<<<<<<<<<<<<<<<<<<<<<<<<<< Welcome to the Chatroom >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+msg_box.insert(tk.END, "<<<<<<<<<<<<<<<<<<<<<<<<<< Welcome <"+str(clientName)+"> to the Chatroom >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 msg_box.insert(tk.END, "<<<<<<<<<<<<<<<<<<<<< Type message and click 'Send' button >>>>>>>>>>>>>>>>>>>>>>>>>>")
-
+#Initialize the auto-recieve
+receive_display()
 
 chat.mainloop()
 

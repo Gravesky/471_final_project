@@ -112,7 +112,7 @@ while (True):
             #     #find the right client and send the msg
             #     if client_sock == contact_sock:
             #         client_sock.send(sender['HDR']+sender['data']+msg['HDR']+msg['data'])
-            print("[SERVER] Message to <"+reciever_name+"> has been forwarded")
+            print("[SERVER] Encrypted Message to <"+reciever_name+"> has been forwarded :\n"+str(msg['data'].decode()))
             
         else:
             print("<-------------Connection Established------------->")
